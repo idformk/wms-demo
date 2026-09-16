@@ -179,8 +179,167 @@
     window.__wmsGo = function (path) {
       var cfg = PAGES[path];
       if (cfg && typeof cfg.__refresh === 'function') cfg.__refresh();
-      return origGo(path);
+      var ret = origGo(path);
+      if (path === TAX_PATH && window.__WMS_TAX) wireTaxExtras(document.getElementById('wmsMain'));
+      return ret;
     };
+  }
+
+  // ---------- §10. 전자세금계산서 발행(P1) 메뉴 주입 + 화면 배선 ----------
+  var TAX_PATH = '/payment/tax-invoice';
+
+  function patchSider() {
+    if (typeof window.renderSider !== 'function' || window.renderSider.__demoPatched) return;
+    var orig = window.renderSider;
+    var wrapped = function (activePath) {
+      var html = orig(activePath);
+      var active = activePath === TAX_PATH;
+      var item = '<div class="wms-submenu-item' + (active ? ' is-active' : '') + '" data-tax-nav="1">전자세금계산서 발행 <span class="p1">P1</span></div>';
+      html = html.replace(/<div class="wms-submenu-item[^"]*">채권조정처리<\/div>/, function (m) { return m + item; });
+      return html;
+    };
+    wrapped.__demoPatched = true;
+    window.renderSider = wrapped;
+    var style = document.createElement('style');
+    style.textContent = '.p1{display:inline-block;margin-left:4px;padding:0 5px;font-size:10px;line-height:15px;border-radius:4px;background:#DBEAFE;color:#1D4ED8;font-weight:700;vertical-align:1px;}';
+    document.head.appendChild(style);
+  }
+
+  // capture-phase 클릭 위임: P1 배지 때문에 textContent 매칭이 깨지는 것을 우회
+  function wireTaxNav() {
+    document.addEventListener('click', function (e) {
+      var it = e.target.closest && e.target.closest('[data-tax-nav]');
+      if (!it) return;
+      e.stopPropagation();
+      history.replaceState(null, '', '#' + TAX_PATH);
+      window.__wmsGo && window.__wmsGo(TAX_PATH);
+    }, true);
+  }
+
+  function taxModalCss() {
+    var style = document.createElement('style');
+    style.textContent = [
+      '#taxSheetScrim{position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:10050;display:none;align-items:center;justify-content:center;}',
+      '#taxSheetScrim.is-open{display:flex;}',
+      '#taxSheet{width:420px;background:#fff;border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.25);overflow:hidden;}',
+      '#taxSheet .hd{padding:16px 20px;border-bottom:1px solid var(--gray-200);font-size:15px;font-weight:700;}',
+      '#taxSheet .bd{padding:18px 20px;display:flex;flex-direction:column;gap:14px;}',
+      '#taxSheet .ft{padding:12px 20px;border-top:1px solid var(--gray-200);display:flex;justify-content:flex-end;gap:8px;}',
+      '#taxSheet .radios{display:flex;flex-direction:column;gap:8px;}',
+      '#taxSheet label.opt{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-800);cursor:pointer;}',
+      '#taxSheet input[type=number]{width:100%;height:36px;border:1px solid var(--gray-300);border-radius:6px;padding:0 10px;font-size:13px;box-sizing:border-box;}',
+      '#taxSheet .lbl{font-size:12px;color:var(--gray-500);margin-bottom:6px;}',
+    ].join('');
+    document.head.appendChild(style);
+  }
+
+  function ensureTaxSheet() {
+    if (document.getElementById('taxSheetScrim')) return;
+    taxModalCss();
+    var wrap = document.createElement('div');
+    wrap.id = 'taxSheetScrim';
+    wrap.innerHTML =
+      '<div id="taxSheet">' +
+      '<div class="hd">수정 발행</div>' +
+      '<div class="bd">' +
+      '<div><div class="lbl">사유</div><div class="radios">' +
+      ['기재사항 착오', '공급가액 변동', '환입'].map(function (r, i) {
+        return '<label class="opt"><input type="radio" name="taxAmendReason" value="' + r + '" ' + (i === 0 ? 'checked' : '') + '/> ' + r + '</label>';
+      }).join('') +
+      '</div></div>' +
+      '<div><div class="lbl">금액(원, 음수 가능)</div><input type="number" id="taxAmendAmt" placeholder="-250000" /></div>' +
+      '</div>' +
+      '<div class="ft"><button class="btn btn-default" id="taxSheetCancel">취소</button><button class="btn btn-primary" id="taxSheetOk">수정 발행</button></div>' +
+      '</div>';
+    document.body.appendChild(wrap);
+    wrap.addEventListener('click', function (e) { if (e.target === wrap) closeTaxSheet(); });
+    document.getElementById('taxSheetCancel').onclick = closeTaxSheet;
+  }
+  function openTaxSheet(no) {
+    ensureTaxSheet();
+    document.getElementById('taxAmendAmt').value = '';
+    var ok = document.getElementById('taxSheetOk');
+    ok.onclick = function () {
+      var reason = (document.querySelector('input[name=taxAmendReason]:checked') || {}).value || '기재사항 착오';
+      var amt = document.getElementById('taxAmendAmt').value;
+      window.__WMS_TAX.amend(no, reason, amt);
+      closeTaxSheet();
+      window.__wmsCloseDrawer && window.__wmsCloseDrawer();
+      toast('수정 발행 처리 — 원본 ' + no + ' 아래 수정 행 추가');
+      rerenderTax();
+    };
+    document.getElementById('taxSheetScrim').classList.add('is-open');
+  }
+  function closeTaxSheet() {
+    var el = document.getElementById('taxSheetScrim');
+    if (el) el.classList.remove('is-open');
+  }
+
+  function rerenderTax() {
+    var T = window.__WMS_TAX;
+    if (!T) return;
+    var main = document.getElementById('wmsMain');
+    if (!main) return;
+    WMS.renderPage(main, T.cfg);
+    wireTaxExtras(main);
+  }
+
+  function wireTaxExtras(main) {
+    var T = window.__WMS_TAX;
+    if (!T) return;
+    // intro block (요약 카드 + 법인 분기표) — filterbar 앞에 삽입
+    var region = main.querySelector('.wms-content .table-region');
+    var head = main.querySelector('.wms-filterbar');
+    var introWrap = document.createElement('div');
+    introWrap.innerHTML = T.introHTML();
+    if (head) head.parentNode.insertBefore(introWrap.firstElementChild, head);
+    else if (region) region.parentNode.insertBefore(introWrap.firstElementChild, region);
+
+    // 필터 chips: 순서상 0=월, 1=법인, 3=상태 (2=거래처 input)
+    var chipGroups = main.querySelectorAll('.wms-filterbar .wms-chips');
+    if (chipGroups[0]) chipGroups[0].querySelectorAll('.wms-chip').forEach(function (ch, i) {
+      ch.addEventListener('click', function () { T.setMonth(T.MONTHS[i]); rerenderTax(); });
+    });
+    if (chipGroups[1]) chipGroups[1].querySelectorAll('.wms-chip').forEach(function (ch, i) {
+      var val = ['전체'].concat(T.CORP)[i];
+      ch.addEventListener('click', function () { T.setCorp(val); rerenderTax(); });
+    });
+    if (chipGroups[2]) chipGroups[2].querySelectorAll('.wms-chip').forEach(function (ch, i) {
+      var val = ['전체', '대기', '홀드', '완료', '수정'][i];
+      ch.addEventListener('click', function () { T.setStatus(val); rerenderTax(); });
+    });
+    var searchInput = main.querySelector('.wms-filterbar .wms-input-search input');
+    if (searchInput) {
+      searchInput.addEventListener('change', function () { T.setQ(searchInput.value); rerenderTax(); });
+      searchInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { T.setQ(searchInput.value); rerenderTax(); } });
+    }
+    // 전량 발행
+    var issueBtn = main.querySelector('[data-act="issue-all"]');
+    if (issueBtn) issueBtn.addEventListener('click', function () {
+      if (issueBtn.classList.contains('is-disabled')) return;
+      var r = T.issueAll();
+      toast(r.n + '건 발행 · 홀드 ' + r.m + '건은 사유 해소 후 자동 재시도');
+      rerenderTax();
+    });
+  }
+
+  function wireTaxDrawerDelegation() {
+    document.addEventListener('click', function (e) {
+      var resolveBtn = e.target.closest && e.target.closest('[data-act="resolve-hold"]');
+      if (resolveBtn) {
+        var no = resolveBtn.getAttribute('data-no');
+        window.__WMS_TAX.resolveHold(no);
+        window.__wmsCloseDrawer && window.__wmsCloseDrawer();
+        toast('사유 해소 완료 — 대기로 전환');
+        rerenderTax();
+        return;
+      }
+      var amendBtn = e.target.closest && e.target.closest('[data-act="amend"]');
+      if (amendBtn) {
+        var no2 = amendBtn.getAttribute('data-no');
+        openTaxSheet(no2);
+      }
+    }, true);
   }
 
   function init() {
@@ -191,13 +350,15 @@
     wireDelegatedClicks();
     patchOrderConfirm(PAGES);
     patchShortage(PAGES);
+    patchSider();
+    wireTaxNav();
+    wireTaxDrawerDelegation();
     wrapGo(PAGES);
     // 최초 화면이 배송처리/결품현황일 경우를 대비해 즉시 1회 갱신 + 재렌더
-    var initial = (location.hash || '').replace('#', '');
-    if (PAGES[initial] && typeof PAGES[initial].__refresh === 'function') {
-      PAGES[initial].__refresh();
-      window.__wmsGo(initial);
-    }
+    var initial = (location.hash || '').replace('#', '') || Object.keys(PAGES)[0];
+    if (PAGES[initial] && typeof PAGES[initial].__refresh === 'function') PAGES[initial].__refresh();
+    // 사이드바(대금관리 서브메뉴 P1 항목)가 패치 이전 초기 렌더 결과에 반영되도록 1회 재렌더
+    if (window.__wmsGo) window.__wmsGo(initial);
   }
 
   init();

@@ -38,7 +38,7 @@
         '<div class="wc-amt">' + APP.won(w.balance) + '</div>' +
         '<div class="wc-sub">발주 약 <b>' + n + '</b>회 정도 가능 (지난 30일 평균)</div>' +
         '<div class="wc-va">' +
-          '<span class="g"><span class="cap-w">전용 가상계좌</span><b>마트프로은행 ***-***-4567</b></span>' +
+          '<span class="g"><span class="cap-w">전용 가상계좌</span><b>***-***-4567 (입금 전용)</b></span>' +
           '<button class="btn sm ghost-w" data-act="balCopy">복사</button>' +
         '</div>' +
         '<button class="btn block wc-cta" data-act="go" data-to="#/cart">충전하기</button>' +
@@ -110,7 +110,7 @@
       '<header class="hdr"><button class="back" data-act="back">‹</button><h1>잔액 · 거래 내역</h1><span class="rgt"></span></header>' +
       '<div class="view pad">' +
         card +
-        breakdown(w) +
+        (w.type === "CREDIT" ? breakdown(w) : "") +
         '<div class="sec-t"><h2>거래 내역</h2></div>' +
         '<div class="chips">' + chips + '</div>' +
         '<div class="rows">' + (list.length ? list.map(txRow).join('') : '<div class="row"><span class="g cap">해당 내역이 없습니다</span></div>') + '</div>' +
