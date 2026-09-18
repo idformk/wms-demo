@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WBS 뷰어 · 마트프로 WMS</title>
+<link rel="stylesheet" href="wbs.css">
+</head>
+<body>
+
+<div id="wbsBanner">
+  <span class="l">시연용 실물 발췌 · WBS v12.8 뷰어</span>
+  <span class="r">
+    <a href="../index.html">진입 페이지</a>
+    <a href="../wms/index.html">관리자 웹</a>
+    <a href="../app/index.html">점주 앱</a>
+  </span>
+</div>
+
+<div class="wrap">
+  <div id="fetchNotice"></div>
+
+  <h1 class="pagetitle">WBS 뷰어 — 확정 사양 · 페이지 매핑 · 트래킹</h1>
+  <p class="srcnote" id="srcNote">원본 정보를 불러오는 중…</p>
+
+  <div class="summary">
+    <div class="tile"><div class="num" id="sumSpecs">-</div><div class="lbl">확정 사양</div></div>
+    <div class="tile"><div class="num" id="sumPages">-</div><div class="lbl">페이지 매핑</div></div>
+    <div class="tile"><div class="num" id="sumTrack">-</div><div class="lbl">트래킹</div></div>
+    <div class="tile"><div class="num" id="sumDone">-</div><div class="lbl">트래킹 완료</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="specs">확정 사양 <span class="cnt" id="tabCntSpecs"></span></button>
+    <button class="tab-btn" data-tab="pages">페이지 매핑 <span class="cnt" id="tabCntPages"></span></button>
+    <button class="tab-btn" data-tab="track">트래킹 <span class="cnt" id="tabCntTrack"></span></button>
+  </div>
+
+  <!-- ---------- 확정 사양 ---------- -->
+  <section class="tabpanel active" id="panel-specs">
+    <div class="filterbar">
+      <div class="chips" id="specsCatChips"></div>
+    </div>
+    <div class="filterbar">
+      <input class="search" id="specsSearch" type="text" placeholder="사양 ID · 본문 · 관련 페이지 검색">
+    </div>
+    <p class="resultcnt" id="specsResultCnt"></p>
+    <div class="list" id="specsList"></div>
+  </section>
+
+  <!-- ---------- 페이지 매핑 ---------- -->
+  <section class="tabpanel" id="panel-pages">
+    <div class="filterbar">
+      <div class="chips" id="pagesPriChips"></div>
+    </div>
+    <div class="filterbar">
+      <select class="dsel" id="pagesDomainSel"></select>
+      <input class="search" id="pagesSearch" type="text" placeholder="페이지 번호 · 이름 · 도메인 · 결정사항 검색">
+    </div>
+    <p class="resultcnt" id="pagesResultCnt"></p>
+    <div class="list" id="pagesList"></div>
+  </section>
+
+  <!-- ---------- 트래킹 ---------- -->
+  <section class="tabpanel" id="panel-track">
+    <div class="filterbar">
+      <div class="chips" id="trackCatChips"></div>
+    </div>
+    <div class="filterbar">
+      <div class="chips" id="trackStChips"></div>
+    </div>
+    <div class="filterbar">
+      <input class="search" id="trackSearch" type="text" placeholder="번호 · 제목 · 본문 · 참조 검색">
+    </div>
+    <p class="resultcnt" id="trackResultCnt"></p>
+    <div id="trackList"></div>
+  </section>
+
+</div>
+
+<script src="wbs-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

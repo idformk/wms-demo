@@ -12,7 +12,8 @@
   @media (max-width:420px){header.hero h1{font-size:21px;}}
   header.hero p{color:var(--sub);font-size:14px;margin:0;}
 
-  .cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:48px;}
+  .cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:48px;}
+  @media (max-width:1000px){.cards{grid-template-columns:1fr 1fr;}}
   @media (max-width:760px){.cards{grid-template-columns:1fr;}}
 
   .card{
@@ -46,6 +47,17 @@
   .mini-phone-tabbar{margin-top:auto;height:10px;border-radius:4px;background:#EEF2F7;display:flex;gap:3px;padding:2px;}
   .mini-phone-tabbar i{flex:1;border-radius:2px;background:#D7DEE9;}
   .mini-phone-tabbar i:first-child{background:var(--primary);opacity:.5;}
+
+  /* mini mockup: WBS 뷰어 (테이블/행 실루엣) */
+  .mini-wbs{border-radius:10px;border:1px solid var(--line);background:#fafbfd;overflow:hidden;height:150px;padding:10px;display:flex;flex-direction:column;gap:6px;}
+  .mini-wbs-tabs{display:flex;gap:6px;margin-bottom:2px;}
+  .mini-wbs-tabs i{height:8px;width:30%;border-radius:3px;background:#E5E9F0;}
+  .mini-wbs-tabs i:first-child{background:var(--primary);opacity:.7;}
+  .mini-wbs-row{height:14px;border-radius:4px;background:#EEF2F7;display:flex;align-items:center;padding:0 6px;gap:5px;}
+  .mini-wbs-row i{height:6px;border-radius:2px;background:#D7DEE9;}
+  .mini-wbs-row i.id{flex:0 0 14%;background:var(--primary);opacity:.4;}
+  .mini-wbs-row i.bar{flex:1;}
+  .mini-wbs-row i.badge{flex:0 0 16%;background:var(--ok);opacity:.5;}
 
   section.map{margin-bottom:48px;}
   section.map > h2{font-size:18px;font-weight:700;margin:0 0 6px;}
@@ -122,6 +134,19 @@
       </div>
       <h2>점주 앱(로지오) 열기</h2>
       <p class="desc">로그인·발주·장바구니·확정·주문내역·잔액·공지·마이페이지 Core 화면.</p>
+      <span class="cta">새 창에서 열기 →</span>
+    </a>
+
+    <a class="card" href="wbs/index.html" target="_blank" rel="noopener">
+      <div class="mini-wbs">
+        <div class="mini-wbs-tabs"><i></i><i></i><i></i></div>
+        <div class="mini-wbs-row"><i class="id"></i><i class="bar"></i><i class="badge"></i></div>
+        <div class="mini-wbs-row"><i class="id"></i><i class="bar"></i><i class="badge"></i></div>
+        <div class="mini-wbs-row"><i class="id"></i><i class="bar"></i><i class="badge"></i></div>
+        <div class="mini-wbs-row"><i class="id"></i><i class="bar"></i><i class="badge"></i></div>
+      </div>
+      <h2>WBS 뷰어 열기</h2>
+      <p class="desc">확정 사양 100 · 페이지 매핑 69 · 트래킹 175건 — 실물 산출물 그대로 열람.</p>
       <span class="cta">새 창에서 열기 →</span>
     </a>
   </div>
@@ -225,6 +250,15 @@
         </ul>
       </div>
 
+      <div class="group">
+        <h3>WBS 뷰어</h3>
+        <ul>
+          <li><a href="wbs/index.html#/specs" target="_blank" rel="noopener">확정 사양 (100)</a></li>
+          <li><a href="wbs/index.html#/pages" target="_blank" rel="noopener">페이지 매핑 (69)</a></li>
+          <li><a href="wbs/index.html#/track" target="_blank" rel="noopener">트래킹 (175)</a></li>
+        </ul>
+      </div>
+
     </div>
   </section>
 
@@ -265,6 +299,14 @@
         <li><a href="wms/index.html#/payment/tax-invoice" target="_blank" rel="noopener">전자세금계산서 발행 — 마감 완료월에서 「전량 발행」 클릭 → 대기 건 일괄 완료</a></li>
         <li><a href="wms/index.html#/payment/tax-invoice" target="_blank" rel="noopener">홀드 행 클릭 → 사유 확인 → 「사유 해소(시연)」 → 대기로 전환</a></li>
         <li><a href="wms/index.html#/payment/tax-invoice" target="_blank" rel="noopener">완료 행 클릭 → 「수정 발행」 → 사유·금액 입력 → 원본 아래 수정 행 생성 확인</a></li>
+      </ol>
+    </div>
+    <div class="scenario">
+      <h3>⑤ 사양 → 화면 → 목업 추적</h3>
+      <ol>
+        <li><a href="wbs/index.html#/specs/S-40" target="_blank" rel="noopener">WBS 뷰어에서 사양 S-40 열기</a></li>
+        <li><a href="wbs/index.html#/pages/7" target="_blank" rel="noopener">관련 페이지 #7(마스터 등록)로 이동</a></li>
+        <li><a href="wms/index.html#/system/partner" target="_blank" rel="noopener">목업 화면(거래처 관리)에서 실제 구현 확인</a></li>
       </ol>
     </div>
   </section>
