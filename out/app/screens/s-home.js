@@ -68,7 +68,7 @@
           '<div class="hrow"><span>' + today() + '</span><span class="hpill">영업 중</span></div>' +
           '<h2>오늘 발주를<br>시작해 볼까요?</h2>' +
           '<div class="bar"><i id="hBar" style="width:' + pr.toFixed(1) + '%"></i><span class="mk" style="left:' + MARK.toFixed(1) + '%"></span></div>' +
-          '<div class="scale"><span>09:00</span><span id="hCd">마감 16:00 · --:--:--</span><span>18:00</span></div>' +
+          '<div class="scale"><span>09:00</span><span id="hCd">마감 16:00까지 --:--:--</span><span>18:00</span></div>' +
           '<button class="cta" data-act="go" data-to="#/catalog"><span>발주 시작하기</span><span>→</span></button>' +
         '</div>' +
 
@@ -96,7 +96,8 @@
       var cd = el.querySelector('#hCd'), bar = el.querySelector('#hBar');
       var tick = function () {
         if (!document.body.contains(cd)) { clearInterval(timer); return; }
-        cd.textContent = '마감 16:00 · ' + APP.hms(APP.deadline());
+        /* 16:00 이후엔 다음 영업일 마감까지 남은 시간 — 시각으로 읽히지 않게 문구 구분 */
+        cd.textContent = (new Date().getHours() >= 16 ? '다음 마감까지 ' : '마감 16:00까지 ') + APP.hms(APP.deadline());
         bar.style.width = progress().toFixed(1) + '%';
       };
       tick();

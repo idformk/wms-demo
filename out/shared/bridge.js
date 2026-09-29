@@ -1,4 +1,4 @@
-/* shared/bridge.js — localStorage 브리지 (점주 앱 ↔ WMS 데이터 연결)
+/* shared/bridge.js — localStorage 브리지 (발주 앱 ↔ WMS 데이터 연결)
    같은 origin(GitHub Pages)에서 양쪽 페이지가 공유하는 데모 데이터 저장소.
    외부 CDN·네트워크 의존 없음. 모든 storage 접근은 try/catch로 방어. */
 (function () {

@@ -13,7 +13,7 @@
       return '' +
         '<div class="login">' +
           '<div class="logo">주</div>' +
-          '<h1>점주 주문 앱</h1>' +
+          '<h1>발주 앱</h1>' +
           '<p class="sub">거래처 코드로 로그인해 주세요</p>' +
           '<div class="field"><input class="input" id="lgCode" value="' + s.code + '" autocomplete="off"></div>' +
           '<div class="field"><input class="input" id="lgPw" type="password" value="demo1234"></div>' +
@@ -23,6 +23,7 @@
             '<button data-act="lgHelp" data-m="비밀번호 재설정은 시연 범위에 없습니다">비밀번호 재설정</button>' +
             '<button data-act="lgHelp" data-m="고객센터 ***-**** (시연용)">고객센터</button>' +
           '</div>' +
+          '<div class="demo-links"><a href="../index.html">시연 진입 페이지</a><a href="../wms/index.html">관리자 웹(WMS)</a></div>' +
         '</div>';
     }
   };
@@ -70,8 +71,8 @@
     APP.state.readNotices.add(d.id);
     APP.save();
     APP.closeSheet();
-    APP.go('#/home');
+    APP.go(APP.afterLoginHash());
   });
 
-  function afterLogin() { APP.go('#/home'); }
+  function afterLogin() { APP.go(APP.afterLoginHash()); }
 })();

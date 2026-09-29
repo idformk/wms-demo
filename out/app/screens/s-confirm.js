@@ -123,7 +123,7 @@
         walletBlock +
 
         '<div class="card">' +
-          '<div class="row"><span class="g cap">배송 요청일</span><span class="rt">' + reqDate + '</span></div>' +
+          '<div class="row"><span class="g cap">배송 요청일</span><span class="rt">' + reqDate.replace(/-/g, '.') + '</span></div>' +
           '<div class="row"><span class="g cap">배송지</span><span class="rt">' + APP.esc((window.DATA && DATA.store.name) || '') + '</span></div>' +
         '</div>' +
       '</div>' +
@@ -150,7 +150,7 @@
       '<h2>가상계좌 입금 안내</h2>' +
       '<p class="cap" style="margin-bottom:14px">아래 전용 가상계좌로 ' + APP.won(short) + ' 이상 입금해 주세요. (시연 화면에서는 입금 확인 버튼으로 즉시 반영됩니다.)</p>' +
       '<div class="card flat" style="margin-top:0">' +
-        '<div class="row"><span class="g cap">전용 가상계좌</span><span class="rt" style="font-weight:700">***-***-4567 (전용 가상계좌)</span></div>' +
+        '<div class="row"><span class="g cap">전용 가상계좌</span><span class="rt" style="font-weight:700">***-***-4567 (입금 전용)</span></div>' +
         '<div class="row"><span class="g cap">입금 필요 금액</span><span class="rt">' + APP.won(short) + '</span></div>' +
       '</div>' +
       '<button class="btn primary block" style="margin-top:14px" data-act="confirmChargeDone" data-amt="' + short + '">입금 완료(시연)</button>'
@@ -244,7 +244,7 @@
       '<div class="view pad" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:60px">' +
         '<div style="width:74px;height:74px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:38px">✓</div>' +
         '<h2 style="margin:18px 0 6px;font-size:21px;font-weight:800">주문이 확정됐어요</h2>' +
-        '<p class="cap" style="line-height:1.6">명일 도착 예정이에요.<br>출고가 완료되면 다시 알려드릴게요.</p>' +
+        '<p class="cap" style="line-height:1.6">' + (order && order.req ? APP.esc(order.req.replace(/-/g, '.')) + ' 도착 예정이에요.' : '요청하신 배송일에 도착 예정이에요.') + '<br>출고가 완료되면 다시 알려드릴게요.</p>' +
         '<div class="card" style="width:100%;text-align:left">' +
           '<div class="row"><span class="g cap">주문번호</span><span class="rt" style="font-weight:700">' + APP.esc(no) + '</span></div>' +
           '<div class="row"><span class="g cap">결제 금액</span><span class="rt">' + APP.won(amt) + '</span></div>' +

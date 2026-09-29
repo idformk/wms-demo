@@ -1,4 +1,4 @@
-/* app.css — 점주 앱(로지오) 목업 토큰·컴포넌트 (NOTES.md §5-1) */
+/* app.css — 발주 앱(로지오) 목업 토큰·컴포넌트 (NOTES.md §5-1) */
 :root{
   --pri:#0B87FB; --pri-d:#0668C9; --pri-l:#E8F3FF;
   --bg:#F5F7FA; --card:#fff; --line:#E5E7EB;
@@ -19,6 +19,12 @@ a{color:inherit}
 .toplabel a{color:var(--pri);text-decoration:none;font-weight:600}
 .row2{display:flex;gap:28px;align-items:flex-start}
 .phone{width:390px;height:844px;border-radius:40px;background:var(--bg);position:relative;overflow:hidden;box-shadow:0 18px 50px rgba(17,24,39,.22),0 0 0 10px #1F2937;flex:none}
+/* 낮은 데스크톱 창(예 1280×800): 폰 틀이 창 안에 다 보이게 높이를 줄인다 */
+@media (min-width:481px) and (max-height:940px){
+  .stage{padding:12px 16px 16px}
+  .toplabel{margin-bottom:10px}
+  .phone{height:calc(100vh - 84px);min-height:560px}
+}
 .panel{width:290px;background:#fff;border-radius:16px;box-shadow:var(--sh);padding:20px;font-size:13px;color:var(--t2)}
 .panel h3{margin:0 0 4px;font-size:16px;color:var(--t1)}
 .panel .wbs{display:inline-block;background:var(--pri-l);color:var(--pri-d);font-weight:700;font-size:12px;padding:3px 9px;border-radius:999px;margin:6px 0 12px}
@@ -156,6 +162,9 @@ a{color:inherit}
 .links{display:flex;justify-content:center;gap:0;margin-top:22px;font-size:13px;color:var(--t2)}
 .links button{padding:0 12px;position:relative}
 .links button+button::before{content:'';position:absolute;left:0;top:3px;bottom:3px;width:1px;background:var(--line)}
+/* 시연용 돌아가기 링크: 모바일에서만(데스크톱은 위 안내 줄에 있음) */
+.demo-links{display:none}
+@media (max-width:480px){.demo-links{display:flex;justify-content:center;gap:16px;margin-top:28px;font-size:12px}.demo-links a{color:var(--pri);text-decoration:none;font-weight:600}}
 
 /* ---------- 모바일: 프레임 제거 ---------- */
 @media (max-width:480px){

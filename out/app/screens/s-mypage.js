@@ -39,7 +39,7 @@
             '<div class="mp-name">' + APP.esc(d.store.name) + ' 사장님</div>' +
             '<div class="cap">거래처 코드 ' + APP.esc(d.store.code) + '</div>' +
           '</div>' +
-          '<button class="btn ghost sm">편집</button>' +
+          '<button class="btn ghost sm" data-act="mpToast">편집</button>' +
         '</div>' +
 
         '<div class="mp-stats">' +
@@ -71,6 +71,10 @@
           '<button class="row" data-act="mpToast"><span class="g tt">비밀번호 변경</span><span class="arw">›</span></button>' +
           '<button class="row" data-act="mpToast"><span class="g tt">서비스제공자 정보</span><span class="arw">›</span></button>' +
           '<button class="row" data-act="mpLogout"><span class="g tt" style="color:var(--red)">로그아웃</span><span class="arw">›</span></button>' +
+        '</div>' +
+        '<div class="rows" style="margin-top:12px">' +
+          '<a class="row" href="../wms/index.html" style="text-decoration:none;color:inherit"><span class="g tt">관리자 웹(WMS) 열기 (시연)</span><span class="arw">›</span></a>' +
+          '<a class="row" href="../index.html" style="text-decoration:none;color:inherit"><span class="g tt">시연 진입 페이지로</span><span class="arw">›</span></a>' +
         '</div>' +
 
       '</div>';
@@ -125,7 +129,11 @@
       var seed = DATA.notifications.map(function (n) {
         return Object.assign({ group: groupOf(n.at) }, n);
       });
-      var list = orderNotifs().concat(seed);
+      var list = orderNotifs().concat(seed).map(function (n) {
+        if (notiAllRead) n = Object.assign({}, n, { unread: false });
+        if (!n.orderNo) { var m = /AO-\d+/.exec(n.body || ''); if (m) n = Object.assign({}, n, { orderNo: m[0] }); }
+        return n;
+      });
       var unread = list.filter(function (n) { return n.unread; }).length;
 
       var groups = ['오늘', '어제', '이전'];
@@ -133,7 +141,7 @@
         var items = list.filter(function (n) { return n.group === g; });
         if (!items.length) return '';
         var rows = items.map(function (n) {
-          return '<button class="row nrow" data-act="' + (n.orderNo ? 'notiGoOrder' : 'notiNoop') + '" data-no="' + (n.orderNo || '') + '">' +
+          return '<button class="row nrow" data-act="' + (n.orderNo ? 'notiGoOrder' : 'notiNoop') + '" data-no="' + (n.orderNo || '') + '" data-kind="' + APP.esc(n.kind) + '">' +
             '<span class="nic">' + notifIcon(n.kind) + '</span>' +
             '<span class="g"><span class="tt">' + APP.esc(n.title) + (n.unread ? '<span class="dot" style="margin-left:6px;display:inline-block"></span>' : '') + '</span>' +
             '<span class="st">' + APP.esc(n.body) + '</span></span>' +
@@ -155,6 +163,11 @@
   };
 
   APP.on('notiGoOrder', function (d) { if (d.no) APP.go('#/order/' + d.no); });
-  APP.on('notiNoop', function () {});
-  APP.on('notiReadAll', function () { APP.toast('모두 읽음으로 처리했습니다'); APP.render(); });
+  APP.on('notiNoop', function (d) {
+    if (d.kind === '공지') APP.go('#/notice/N1');
+    else if (d.kind === '결제') APP.go('#/balance');
+    else APP.toast('연결된 화면이 없는 알림입니다');
+  });
+  var notiAllRead = false;
+  APP.on('notiReadAll', function () { notiAllRead = true; APP.toast('모두 읽음으로 처리했습니다'); APP.render(); });
 })();

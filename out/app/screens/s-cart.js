@@ -150,7 +150,11 @@
     APP.go(location.hash);
   });
   APP.on('cartDel', function (d) { removeLine(APP.state, d.id); APP.go(location.hash); });
-  APP.on('cartToggleBundle', function () { bundleCheck = !bundleCheck; APP.go(location.hash); });
+  APP.on('cartToggleBundle', function () {
+    bundleCheck = !bundleCheck;
+    APP.go(location.hash);
+    if (bundleCheck) APP.toast('시연용 화면이라 저장되지 않습니다');
+  });
   APP.on('cartOpenDate', function () {
     APP.sheet(dateSheetHTML());
   });

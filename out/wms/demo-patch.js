@@ -35,7 +35,7 @@
     bar.id = 'demoBanner';
     bar.innerHTML =
       '<span class="l">시연용 샘플 데이터 · 관리자 웹(WMS) 목업</span>' +
-      '<span class="r"><a href="../index.html">진입 페이지</a><a href="../app/index.html">점주 앱 열기</a></span>';
+      '<span class="r"><a href="../index.html">진입 페이지</a><a href="../app/index.html">발주 앱 열기</a></span>';
     document.body.appendChild(bar);
   }
 
@@ -152,7 +152,7 @@
           var ts = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') +
             ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
           window.BRIDGE.updateOrder(lastOCRow.no, { st: 'SHIPPED', confirmed: ts, by: '물류담당' });
-          toast('배송확정 처리 — 점주 앱에 반영');
+          toast('배송확정 처리 — 발주 앱에 반영');
           window.__wmsCloseDrawer && window.__wmsCloseDrawer();
           var path = (location.hash || '').replace('#', '') || '/logistics/order-confirm';
           window.__wmsGo && window.__wmsGo(path);
@@ -165,7 +165,7 @@
         var no = fixBtn.getAttribute('data-shortage-no');
         var name = fixBtn.getAttribute('data-shortage-name');
         window.BRIDGE.updateOrder(no, { shortage: [{ name: name, qty: 1, reason: '센터 재고 부족' }] });
-        toast('결품 처리 완료 — 점주 앱에 대체 안내 반영');
+        toast('결품 처리 완료 — 발주 앱에 대체 안내 반영');
         var path2 = (location.hash || '').replace('#', '') || '/logistics/shortage';
         window.__wmsGo && window.__wmsGo(path2);
       }

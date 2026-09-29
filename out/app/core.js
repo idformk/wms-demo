@@ -146,7 +146,7 @@
     var name = t.getAttribute('data-act');
     e.preventDefault();
     if (name === 'go') { APP.go(t.getAttribute('data-to')); return; }
-    if (name === 'back') { history.back(); return; }
+    if (name === 'back') { if (APP.navCount > 0) history.back(); else APP.go('#/home'); return; }
     if (name === 'closeSheet') { APP.closeSheet(); return; }
     var fn = acts[name];
     if (typeof fn === 'function') { fn(t.dataset, t, e); }
@@ -175,6 +175,13 @@
     }
     return { name: 'home', params: {}, hash: '#/home' };
   }
+
+  /* 로그인 전 딥링크로 들어온 화면을 로그인 후 이어서 연다 */
+  APP.pendingHash = null;
+  APP.afterLoginHash = function () {
+    var h = APP.pendingHash; APP.pendingHash = null;
+    return (h && match(h).name !== 'login') ? h : '#/home';
+  };
 
   APP.go = function (path) {
     if (!path) return;
@@ -210,7 +217,7 @@
 
   APP.render = function () {
     var r = match(location.hash);
-    if (!APP.state.loggedIn && r.name !== 'login') { location.hash = '#/login'; return; }
+    if (!APP.state.loggedIn && r.name !== 'login') { APP.pendingHash = location.hash; location.hash = '#/login'; return; }
     if (APP.state.loggedIn && r.name === 'login') { location.hash = '#/home'; return; }
 
     var host = document.getElementById('phone');
@@ -234,7 +241,9 @@
       body = mod.render(APP.state, r.params) || '';
     }
 
+    var liveToast = document.getElementById('toast');
     host.innerHTML = '<div class="screen">' + STATUSBAR + body + (noTabs ? '' : tabbarHTML(r.name)) + '</div>';
+    if (liveToast) host.appendChild(liveToast); /* 다시 그려도 방금 띄운 안내는 유지 */
     APP.current = r;
 
     if (mod && typeof mod.mount === 'function') {
@@ -254,6 +263,8 @@
   }
 
   /* ---------------- 부팅 ---------------- */
+  APP.navCount = 0;
+  window.addEventListener('hashchange', function () { APP.navCount++; });
   window.addEventListener('hashchange', APP.render);
   window.addEventListener('DOMContentLoaded', function () {
     if (!location.hash) location.hash = APP.state.loggedIn ? '#/home' : '#/login';

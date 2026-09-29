@@ -112,7 +112,7 @@
       '</div>' +
       '<div class="btnbar">' +
         '<button class="btn primary block" data-act="catGoCart"' + (n === 0 ? ' disabled' : '') + '>' +
-          '장바구니 담기 ' + n + ' · ' + APP.won(amt) +
+          '장바구니 보기 ' + n + ' · ' + APP.won(amt) +
         '</button>' +
       '</div>';
     },
@@ -122,7 +122,9 @@
         if (inp) {
           inp.focus();
           var v = inp.value.length; inp.setSelectionRange(v, v);
-          inp.addEventListener('input', function () { ui.q = inp.value; APP.go(location.hash); });
+          // 한글 조합 중에는 다시 그리지 않음(다시 그리면 입력 중인 글자가 끊김)
+          inp.addEventListener('input', function (e) { if (e.isComposing) return; ui.q = inp.value; APP.go(location.hash); });
+          inp.addEventListener('compositionend', function () { ui.q = inp.value; APP.go(location.hash); });
         }
       }
     }

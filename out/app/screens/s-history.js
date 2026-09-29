@@ -8,18 +8,19 @@
     { key: '1m', label: '1개월', days: 30 },
     { key: '3m', label: '3개월', days: 90 }
   ];
-  var curPeriod = '1w';
+  var curPeriod = '1m';
+  var SAMPLE_TODAY = '2026-09-16'; /* 샘플 주문 기준일: 시연 날짜가 지나도 목록이 비지 않게 */
 
-  function daysAgo(dateStr) {
+  function daysAgo(dateStr, isSample) {
     var d = new Date(dateStr + 'T00:00:00');
-    var now = new Date();
+    var now = isSample ? new Date(SAMPLE_TODAY + 'T12:00:00') : new Date();
     return Math.floor((now - d) / 86400000);
   }
 
   function statusInfo(o) {
     if (o.st === 'CANCELLED') return { label: '취소', cls: 'b-gray', step: -1 };
     if (o.st === 'SHIPPED') {
-      if (daysAgo(o.date) >= 2) return { label: '도착완료', cls: 'b-green', step: 4 };
+      if (daysAgo(o.date, o.source !== 'APP') >= 2) return { label: '도착완료', cls: 'b-green', step: 4 };
       return { label: '출고완료', cls: 'b-pri', step: 3 };
     }
     return { label: '접수', cls: 'b-orange', step: 1 };
@@ -40,7 +41,7 @@
 
   function filterByPeriod(orders, key) {
     var p = PERIODS.filter(function (x) { return x.key === key; })[0] || PERIODS[1];
-    return orders.filter(function (o) { return daysAgo(o.date) < p.days; });
+    return orders.filter(function (o) { return daysAgo(o.date, o.source !== 'APP') < p.days; });
   }
 
   APP.screens.history = {
@@ -127,7 +128,8 @@
         '<span class="rt">' + APP.won(it.amt) + '</span></div>';
     }).join('');
     APP.sheet('<h2>영수증 · ' + APP.esc(o.no) + '</h2><div class="card flat" style="margin-top:0">' + rows +
-      '<div class="row" style="padding-top:10px"><span class="g" style="font-weight:700">합계</span><span class="rt" style="font-weight:700">' + APP.won(o.amt) + '</span></div></div>');
+      '<div class="row" style="padding-top:10px"><span class="g" style="font-weight:700">합계</span><span class="rt" style="font-weight:700">' + APP.won(o.amt) + '</span></div></div>' +
+      '<button class="btn ghost block" style="margin-top:12px" data-act="closeSheet">닫기</button>');
   });
 
   APP.on('histCancel', function (d) {

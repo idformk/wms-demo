@@ -124,7 +124,7 @@ body {
 /* ============================================================
    APP SHELL
    ============================================================ */
-.wms-app { display: flex; min-height: 100vh; background: var(--color-white); }
+.wms-app { display: flex; height: 100vh; overflow: hidden; background: var(--color-white); }
 
 .wms-sider {
   width: var(--sider-width);
@@ -132,7 +132,7 @@ body {
   background: var(--cool-100);
   border-right: 1px solid var(--cool-200);
   position: sticky; top: 0; align-self: flex-start;
-  height: 100vh; display: flex; flex-direction: column;
+  height: 100%; display: flex; flex-direction: column;
   z-index: 10;
 }
 .wms-logo {
@@ -176,12 +176,12 @@ body {
   width: 5px; height: 5px; border-radius: 50%; background: var(--color-primary);
 }
 
-.wms-main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 100vh; }
+.wms-main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100%; min-height: 0; overflow-y: auto; }
 
 /* engine page regions */
 .wms-content { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .table-region { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 16px 24px 20px; }
-.table-scroll { flex: 1; min-height: 0; overflow: auto; border: 1px solid var(--cool-200); border-radius: var(--radius); }
+.table-scroll { flex: 1; min-height: 160px; overflow: auto; border: 1px solid var(--cool-200); border-radius: var(--radius); }
 .table-scroll .wms-table thead th { position: sticky; top: 0; z-index: 2; }
 .table-scroll .wms-table thead tr:nth-child(2) th { top: 35px; }
 .table-scroll .wms-table tfoot td { position: sticky; bottom: 0; z-index: 2; }
@@ -398,7 +398,7 @@ table.wms-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 /* ============================================================
    PAGINATION
    ============================================================ */
-.wms-pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; font-size: 14px; color: var(--gray-700); }
+.wms-pagination { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; font-size: 14px; color: var(--gray-700); }
 .wms-pagination .total { margin-right: 8px; color: var(--gray-600); }
 .wms-page { min-width: 32px; height: 32px; padding: 0 6px; border: 1px solid var(--gray-300); border-radius: var(--radius); background: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gray-700); }
 .wms-page:hover { border-color: var(--color-primary); color: var(--color-primary); }

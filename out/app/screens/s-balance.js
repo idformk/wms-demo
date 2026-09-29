@@ -41,7 +41,7 @@
           '<span class="g"><span class="cap-w">전용 가상계좌</span><b>***-***-4567 (입금 전용)</b></span>' +
           '<button class="btn sm ghost-w" data-act="balCopy">복사</button>' +
         '</div>' +
-        '<button class="btn block wc-cta" data-act="go" data-to="#/cart">충전하기</button>' +
+        '<button class="btn block wc-cta" data-act="balCharge">충전하기</button>' +
       '</div>';
   }
 
@@ -120,4 +120,14 @@
 
   APP.on('balFilter', function (d) { ui.filter = d.k; APP.render(); });
   APP.on('balCopy', function () { APP.toast('계좌번호가 복사되었습니다'); });
+  APP.on('balCharge', function () {
+    APP.sheet(
+      '<h2>충전 안내</h2>' +
+      '<p class="cap" style="margin-bottom:14px">전용 가상계좌로 입금하면 잔액에 자동으로 충전됩니다. 시연용 화면이라 실제 입금·저장은 되지 않습니다.</p>' +
+      '<div class="card flat" style="margin-top:0">' +
+        '<div class="row"><span class="g cap">전용 가상계좌</span><span class="rt" style="font-weight:700">***-***-4567 (입금 전용)</span></div>' +
+      '</div>' +
+      '<button class="btn primary block" style="margin-top:14px" data-act="closeSheet">확인</button>'
+    );
+  });
 })();
